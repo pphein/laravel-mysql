@@ -1,0 +1,44 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: root
+        uid: 1000
+      context: ./project
+      dockerfile: Dockerfile
+    image: laravel
+    container_name: laravel_app
+    working_dir: /var/www/
+    volumes:
+      - ./project:/var/www
+    networks:
+      - app-network
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_server
+    ports:
+      - 8000:80
+    volumes:
+      - ./:/var/www
+      - ./nginx:/etc/nginx/conf.d/
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
