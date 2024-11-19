@@ -10,14 +10,15 @@ services:
     image: laravel
     container_name: laravel_app
     working_dir: /var/www/
-    command: ["sh", "-c", "sleep 30 && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"]
+    command: ["sh", "-c", "sleep 30 && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=80"]
+    # command: ["sh", "-c", "sleep 30 && composer update && php artisan migrate --force"]
     depends_on:
       - db
     tty: true
     ports:
-      - 8000:8000
+      - 8001:8000
     # volumes:
-      # - ./project:/var/www
+    #   - ./project:/var/www
       # - ~/.ssh:/home/root/.ssh
       # - ./cache:/home/root/.composer/cache
       # - ./config/php/local.ini:/usr/local/etc/php/conf.d/local.ini
@@ -35,16 +36,16 @@ services:
     networks:
       - app-network
 
-  # nginx:
-  #   image: nginx:alpine
-  #   container_name: nginx_server
-  #   ports:
-  #     - 8000:80
-  #   volumes:
-  #     - ./project:/var/www
-  #     - ./nginx:/etc/nginx/conf.d/
-  #   networks:
-  #     - app-network
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_server
+    ports:
+      - 8000:8000
+    volumes:
+      - ./project:/var/www
+      - ./nginx:/etc/nginx/conf.d/
+    networks:
+      - app-network
 networks:
   app-network:
     driver: bridge

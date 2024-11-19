@@ -24,7 +24,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
+COPY .env.example
+
 COPY  . .
+
+RUN composer install
 
 
 # RUN chown -R www-data:www-data /var/www/storage/logs
